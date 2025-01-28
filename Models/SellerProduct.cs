@@ -8,6 +8,7 @@ namespace OnlineStore.Models
         public int Id { get; set; }
 
         [Required]
+        [DataType(DataType.Currency)]
         public int Price { get; set; }
 
         [DataType(DataType.Date)]

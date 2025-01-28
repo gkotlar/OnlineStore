@@ -14,18 +14,18 @@ namespace OnlineStore.Models
         public string Name { get; set; }
 
         [Required]
+        [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
         [StringLength(450)]
         [Display(Name = "Photo URL")]
+        [DataType(DataType.ImageUrl)]
         public string? PhotoURL { get; set; }
 
         [StringLength(450)]
         [Display(Name = "User Manual URL")]
+        [DataType(DataType.Upload)]
         public string? UserManualURL { get; set; }
-
-        [Required]
-        public int Price { get; set; }
 
         [Required]
         public int ManufacturerId {  get; set; }

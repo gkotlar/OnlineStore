@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using OnlineStore.Data;
 namespace OnlineStore
 {
     public class Program
@@ -5,6 +8,8 @@ namespace OnlineStore
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<OnlineStoreContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineStoreContext") ?? throw new InvalidOperationException("Connection string 'OnlineStoreContext' not found.")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

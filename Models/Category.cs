@@ -4,6 +4,7 @@ namespace OnlineStore.Models
 {
     public class Category
     {
+        [Required]
         public int Id { get; set; }
 
 
