@@ -1,16 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace OnlineStore.Models
 {
-    public class ProductCategory
+    public class SellerProduct
     {
         [Required]
         public int Id { get; set; }
 
+        [Required]
+        public int Price { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? PublishDate { get; set; }
+
 
         [Required]
-        [Display(Name = "Category ID")]
-        public int CategoryId { get; set; }
-        public Category? Category { get; set; }
+        [Display(Name = "Seller ID")]
+        public int SellerId { get; set; }
+        public Seller? Seller { get; set; }
 
 
         [Required]

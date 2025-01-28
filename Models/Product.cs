@@ -5,6 +5,7 @@ namespace OnlineStore.Models
 {
     public class Product
     {
+        [Required]
         public int Id { get; set; }
 
         [Required]
@@ -12,7 +13,8 @@ namespace OnlineStore.Models
         [Display(Name = "Product Name")]
         public string Name { get; set; }
 
-        public string? Description { get; set; }
+        [Required]
+        public string Description { get; set; }
 
         [StringLength(450)]
         [Display(Name = "Photo URL")]
@@ -30,6 +32,63 @@ namespace OnlineStore.Models
 
         public Manufacturer? Manufacturer { get; set; }
 
-        public ICollection<Review> Reviews { get; set; }
+        public ICollection<Review>? Reviews { get; set; }
+
+        [NotMapped]
+        public int? getReviewsCount
+        {
+            get
+            {
+                if (Reviews != null && Reviews.Any())
+                {
+                    return Reviews.Count();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        [NotMapped]
+        public double? getReviewsAverage
+        {
+            get
+            {
+                double averageRating = 0;
+                if (Reviews != null && Reviews.Any())
+                {
+                    int totalSum = 0;
+                    int numValidReviews = 0;
+
+                    foreach (var item in Reviews)
+                    {
+                        if (item.Rating.HasValue)
+                        {
+                            totalSum += item.Rating.Value;
+                            numValidReviews++;
+                        }
+                    }
+
+                    if (numValidReviews != 0)
+                    {
+                        averageRating = (double)totalSum / numValidReviews;
+                    }
+
+                    return Math.Round(averageRating, 2);
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+        }
+
+        [Display(Name = "Genres")]
+        public ICollection<ProductCategory>? productCategories { get; set; }
+        public ICollection<SellerProduct>? sellerProducts { get; set; }
+
+        public ICollection<UserProduct>? UserProducts { get; }
     }
+
 }
