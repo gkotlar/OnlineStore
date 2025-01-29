@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OnlineStore.Data;
+using OnlineStore.Models;
 namespace OnlineStore
 {
     public class Program
@@ -15,6 +16,13 @@ namespace OnlineStore
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+
+            //Seed data into database if empty
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                SeedData.Initialize(services);
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
