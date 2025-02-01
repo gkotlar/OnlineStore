@@ -4,6 +4,8 @@ using OnlineStore.Data;
 using OnlineStore.Models;
 using Microsoft.AspNetCore.Identity;
 using OnlineStore.Areas.Identity.Data;
+using OnlineStore.Interfaces;
+using OnlineStore.Services;
 namespace OnlineStore
 {
     public class Program
@@ -62,6 +64,10 @@ namespace OnlineStore
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
             });
+
+            builder.Services.AddTransient<IBufferedFileUploadService, BufferedFileUploadLocalService>();
+            builder.Services.AddTransient<IStreamFileUploadService, StreamFileUploadLocalService>();
+
 
             var app = builder.Build();
 

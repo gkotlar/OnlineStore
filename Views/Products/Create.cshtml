@@ -1,4 +1,4 @@
-﻿@model OnlineStore.Models.Product
+﻿@model OnlineStore.ViewModels.ProductViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -24,12 +24,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="PhotoURL" class="control-label"></label>
-                <input asp-for="PhotoURL" class="form-control" />
+                <input type ="file" asp-for="PhotoURL" class="form-control" />
                 <span asp-validation-for="PhotoURL" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UserManualURL" class="control-label"></label>
-                <input asp-for="UserManualURL" class="form-control" />
+                <input type="file" asp-for="UserManualURL" class="form-control" />
                 <span asp-validation-for="UserManualURL" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -41,6 +41,12 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert" style="margin-top:20px">
+                    @ViewBag.Message
+                </div>
+            }
         </form>
     </div>
 </div>

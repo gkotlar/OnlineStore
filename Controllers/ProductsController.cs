@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
+using OnlineStore.Interfaces;
 using OnlineStore.Models;
 using OnlineStore.ViewModels;
 
@@ -16,12 +17,15 @@ namespace OnlineStore.Controllers
     public class ProductsController : Controller
     {
         private readonly OnlineStoreContext _context;
+        readonly IBufferedFileUploadService _bufferedFileUploadService;
 
-        public ProductsController(OnlineStoreContext context)
+        public ProductsController(OnlineStoreContext context, IBufferedFileUploadService bufferedFileUploadService)
         {
             _context = context;
-        }
+            _bufferedFileUploadService = bufferedFileUploadService;
 
+        }  
+        
         // GET: Products
         public async Task<IActionResult> Index(int? productCategory, int? minPriceSearchInt, int? maxPriceSearchInt,
             string nameSearchString, string manufacturerSearchString, string sellerSearchString, string sortOrder)
@@ -132,16 +136,63 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,PhotoURL,UserManualURL,ManufacturerId")] Product product)
+        public async Task<IActionResult> Create(ProductViewModel productVM)
         {
+
+            Product product = new Product()
+            {
+                Name = productVM.Name,
+                Description = productVM.Description,
+                UserManualURL = productVM.UserManualURL.FileName,
+                PhotoURL = productVM.PhotoURL.FileName,
+                ManufacturerId = productVM.ManufacturerId
+            };
+
             if (ModelState.IsValid)
             {
+                try
+                {
+                    if (await _bufferedFileUploadService.UploadFile(productVM.PhotoURL))
+                    {
+                        ViewBag.Message = "File Upload Successful";
+                        var fileName = _bufferedFileUploadService.GetUniqueFileName(productVM.PhotoURL);
+                        product.PhotoURL = fileName;
+                    }
+                    else
+                    {
+                        ViewBag.Message = "File Upload Failed";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Log ex
+                    ViewBag.Message = "File Upload Failed";
+                }
+                try
+                {
+                    if (await _bufferedFileUploadService.UploadFile(productVM.UserManualURL))
+                    {
+                        ViewBag.Message = "File Upload Successful";
+                        var fileName = _bufferedFileUploadService.GetUniqueFileName(productVM.UserManualURL);
+                        product.UserManualURL = fileName;
+                    }
+                    else
+                    {
+                        ViewBag.Message = "File Upload Failed";
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    //Log ex
+                    ViewBag.Message = "File Upload Failed";
+                }
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturer, "Id", "Name", product.ManufacturerId);
-            return View(product);
+            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturer, "Id", "Name", productVM.ManufacturerId);
+            return View(productVM);
         }
 
         // GET: Products/Edit/5
