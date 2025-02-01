@@ -21,7 +21,10 @@ namespace OnlineStore
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             builder.Services.AddRazorPages();
-            builder.Services.AddIdentity<OnlineStoreUser, IdentityRole>().AddEntityFrameworkStores<OnlineStoreContext>().AddDefaultTokenProviders();
+            builder.Services.AddIdentity<OnlineStoreUser, IdentityRole>()
+                .AddEntityFrameworkStores<OnlineStoreContext>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews()
