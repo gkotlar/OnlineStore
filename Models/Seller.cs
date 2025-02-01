@@ -33,7 +33,7 @@ namespace OnlineStore.Models
         [DataType(DataType.Date)]
         public DateTime? FoundingDate { get; set; }
 
-        public ICollection<Product>? Products { get; set; }
+        public ICollection<SellerProduct>? sellerProducts { get; set; }
 
     }
 }

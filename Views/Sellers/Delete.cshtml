@@ -47,6 +47,16 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.FoundingDate)
         </dd>
+        <dt class="col-sm-2">
+             @Html.DisplayNameFor(model => model.sellerProducts)
+         </dt>
+         <dd class="col-sm-10">
+            @foreach (var product in Model.sellerProducts)
+            {
+                <a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
+                @product.Product.Name </a> <br />
+            }
+         </dd
     </dl>
     
     <form asp-action="Delete">

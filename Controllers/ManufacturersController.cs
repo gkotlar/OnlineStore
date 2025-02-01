@@ -22,7 +22,8 @@ namespace OnlineStore.Controllers
         // GET: Manufacturers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Manufacturer.ToListAsync());
+            var onlineStoreContext = _context.Manufacturer.Include(m=>m.Products);
+            return View(await onlineStoreContext.ToListAsync());
         }
 
         // GET: Manufacturers/Details/5
@@ -34,6 +35,7 @@ namespace OnlineStore.Controllers
             }
 
             var manufacturer = await _context.Manufacturer
+                .Include(m=>m.Products)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (manufacturer == null)
             {
@@ -125,6 +127,7 @@ namespace OnlineStore.Controllers
             }
 
             var manufacturer = await _context.Manufacturer
+                .Include(m=>m.Products)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (manufacturer == null)
             {

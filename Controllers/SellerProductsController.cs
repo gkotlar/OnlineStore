@@ -49,8 +49,8 @@ namespace OnlineStore.Controllers
         // GET: SellerProducts/Create
         public IActionResult Create()
         {
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description");
-            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Address");
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name");
+            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Name");
             return View();
         }
 
@@ -67,8 +67,8 @@ namespace OnlineStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description", sellerProduct.ProductId);
-            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Address", sellerProduct.SellerId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", sellerProduct.ProductId);
+            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Name", sellerProduct.SellerId);
             return View(sellerProduct);
         }
 
@@ -85,8 +85,8 @@ namespace OnlineStore.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description", sellerProduct.ProductId);
-            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Address", sellerProduct.SellerId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", sellerProduct.ProductId);
+            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Name", sellerProduct.SellerId);
             return View(sellerProduct);
         }
 
@@ -122,8 +122,8 @@ namespace OnlineStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description", sellerProduct.ProductId);
-            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Address", sellerProduct.SellerId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", sellerProduct.ProductId);
+            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Name", sellerProduct.SellerId);
             return View(sellerProduct);
         }
 

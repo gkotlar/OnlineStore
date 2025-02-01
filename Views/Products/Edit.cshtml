@@ -1,8 +1,8 @@
-﻿@model OnlineStore.Models.Product
+﻿@model OnlineStore.ViewModels.ProductCategoriesEditViewModel
 
 @{
-    ViewData["Title"] = "Edit";
-}
+     ViewData["Title"] = "Edit"; 
+ }
 
 <h1>Edit</h1>
 
@@ -12,31 +12,39 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Product.Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Product.Name" class="control-label"> </label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Product.Description" class="control-label"></label>
+                <textarea asp-for="Product.Description" class="form-control"></textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhotoURL" class="control-label"></label>
-                <input asp-for="PhotoURL" class="form-control" />
-                <span asp-validation-for="PhotoURL" class="text-danger"></span>
+                <label asp-for="Product.PhotoURL" class="control-label"></label>
+                <input asp-for="Product.PhotoURL" class="form-control" />
+                <span asp-validation-for="Product.PhotoURL" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UserManualURL" class="control-label"></label>
-                <input asp-for="UserManualURL" class="form-control" />
-                <span asp-validation-for="UserManualURL" class="text-danger"></span>
+                <label asp-for="Product.UserManualURL" class="control-label"></label>
+                <input asp-for="Product.UserManualURL" class="form-control" />
+                <span asp-validation-for="Product.UserManualURL" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ManufacturerId" class="control-label"></label>
-                <select asp-for="ManufacturerId" class="form-control" asp-items="ViewBag.ManufacturerId"></select>
-                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
+                <label asp-for="Product.ManufacturerId" class="control-label"></label>
+                <select asp-for="Product.ManufacturerId" class="form-control" asp-items="ViewBag.ManufacturerId">
+                    <option value="">Select</option>
+                </select>
+                <span asp-validation-for="Product.ManufacturerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Categories</label>
+                <select asp-for="SelectedCategories" class="form-control js-example-basic-multiple"
+                        asp-items="Model.CategoryList"> </select>
+                <span asp-validation-for="SelectedCategories" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -51,4 +59,11 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+        $("#SelectedCategories").select2();
+        });
+    </script>
 }

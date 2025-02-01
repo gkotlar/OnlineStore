@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using OnlineStore.Data;
+using OnlineStore.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,49 +13,49 @@ namespace OnlineStore.Models
 {
     public class SeedData
     {
-        //public static async Task CreateUserRoles(IServiceProvider serviceProvider)
-        //{
-        //    var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        //    var UserManager = serviceProvider.GetRequiredService<UserManager<OnlineStoreUser>>();
-        //    IdentityResult roleResult1;
-        //    IdentityResult roleResult2;
-        //    //Add Admin Role
-        //    var roleCheck1 = await RoleManager.RoleExistsAsync("Admin");
-        //    var roleCheck2 = await RoleManager.RoleExistsAsync("User");
-        //    if (!roleCheck1) { roleResult1 = await RoleManager.CreateAsync(new IdentityRole("Admin")); }
-        //    if (!roleCheck2) { roleResult2 = await RoleManager.CreateAsync(new IdentityRole("User")); }
-        //    OnlineStoreUser user1 = await UserManager.FindByEmailAsync("admin@admin.com");
-        //    if (user1 == null)
-        //    {
-        //        var User1 = new OnlineStoreUser();
-        //        User1.Email = "admin@admin.com";
-        //        User1.UserName = "admin@admin.com";
-        //        string user1PWD = "Admin123";
-        //        IdentityResult chkUser1 = await UserManager.CreateAsync(User1, user1PWD);
-        //        //Add default User to Role Admin 
-        //        if (chkUser1.Succeeded) { var result1 = await UserManager.AddToRoleAsync(User1, "Admin"); }
-        //    }
-        //    OnlineStoreUser user2 = await UserManager.FindByEmailAsync("user@user.com");
-        //    if (user2 == null)
-        //    {
-        //        var User2 = new OnlineStoreUser();
-        //        User2.Email = "user@user.com";
-        //        User2.UserName = "user@user.com";
-        //        string user2PWD = "User1234";
-        //        IdentityResult chkUser2 = await UserManager.CreateAsync(User2, user2PWD);
-        //        //Add default User to Role Admin 
-        //        if (chkUser2.Succeeded) { var result1 = await UserManager.AddToRoleAsync(User2, "User"); }
-        //    }
-        //}
+        public static async Task CreateUserRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<OnlineStoreUser>>();
+            IdentityResult roleResult;
+            //Add Admin Role
+            var roleCheck = await RoleManager.RoleExistsAsync("Admin");
+            if (!roleCheck) { roleResult = await RoleManager.CreateAsync(new IdentityRole("Admin")); }
+            OnlineStoreUser user = await UserManager.FindByEmailAsync("admin@onlinestore.com");
+            if (user == null)
+            {
+                var User = new OnlineStoreUser();
+                User.Email = "admin@onlinestore.com";
+                User.UserName = "admin@onlinestore.com";
+                string userPWD = "Admin123";
+                IdentityResult chkUser = await UserManager.CreateAsync(User, userPWD);
+                //Add default User to Role Admin 
+                if (chkUser.Succeeded) { var result = await UserManager.AddToRoleAsync(User, "Admin"); }
+            }
+            //Add Registered Demo User
+            var roleCheck2 = await RoleManager.RoleExistsAsync("User");
+            IdentityResult roleResult2;
+            if (!roleCheck2) { roleResult2 = await RoleManager.CreateAsync(new IdentityRole("User")); }
+            var user2 = await UserManager.FindByEmailAsync("demo@onlinestore.com");
+            if (user2 == null)
+            {
+                var User2 = new OnlineStoreUser();
+                User2.Email = "demo@onlinestore.com";
+                User2.UserName = "demo@onlinestore.com";
+                string user2PWD = "Duser123";
+                IdentityResult chkUser2 = await UserManager.CreateAsync(User2, user2PWD);
+                //Add default User to Role Admin 
+                if (chkUser2.Succeeded) { var result2 = await UserManager.AddToRoleAsync(User2, "Admin"); }
+            }
+        }
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new OnlineStoreContext(
                 serviceProvider.GetRequiredService<
                     DbContextOptions<OnlineStoreContext>>()))
             {
-                //CreateUserRoles(serviceProvider).Wait();
+                CreateUserRoles(serviceProvider).Wait();
 
-                // Look for any books, authors, genres etc.
                 if (context.Category.Any() || context.Manufacturer.Any() || context.Product.Any() || context.ProductCategory.Any() || context.Review.Any() || context.Seller.Any() || context.SellerProduct.Any() || context.UserProduct.Any())
                 {
                     return;   // DB has been seeded

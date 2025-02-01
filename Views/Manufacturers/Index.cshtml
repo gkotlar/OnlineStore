@@ -30,6 +30,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.FoundingDate)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -53,6 +56,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FoundingDate)
+            </td>
+            <td>
+                @foreach (var product in item.Products)
+                {
+                        <a asp-controller="Actors" asp-action="Details" asp-route-id="@product.Id"> @product.Name </a> <br />
+                }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

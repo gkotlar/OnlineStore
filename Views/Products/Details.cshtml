@@ -38,7 +38,29 @@
             @Html.DisplayNameFor(model => model.Manufacturer)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Manufacturer.Address)
+            @Html.DisplayFor(model => model.Manufacturer.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.productCategories)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var category in Model.productCategories)
+            {
+                <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId">
+                    @category.Category.Name
+                </a> <br />
+            }
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.sellerProducts)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var seller in Model.sellerProducts)
+            {
+                <a asp-controller="Sellers" asp-action="Details" asp-route-id="@seller.SellerId">
+                    @seller.Seller.Name
+                </a> <br />
+            }
         </dd>
     </dl>
 </div>
