@@ -26,6 +26,7 @@ namespace OnlineStore.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<OnlineStoreUser> _signInManager;
         private readonly UserManager<OnlineStoreUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<OnlineStoreUser> _userStore;
         private readonly IUserEmailStore<OnlineStoreUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
@@ -33,12 +34,14 @@ namespace OnlineStore.Areas.Identity.Pages.Account
 
         public RegisterModel(
             UserManager<OnlineStoreUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             IUserStore<OnlineStoreUser> userStore,
             SignInManager<OnlineStoreUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
@@ -114,6 +117,13 @@ namespace OnlineStore.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+                IdentityResult roleResult;
+                //Add User Role
+                var roleCheck = await _roleManager.RoleExistsAsync("User");
+                if (!roleCheck)
+                { 
+                    roleResult = await _roleManager.CreateAsync(new IdentityRole("User")); 
+                }
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -122,6 +132,7 @@ namespace OnlineStore.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+                    await _userManager.AddToRoleAsync(user, "User");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

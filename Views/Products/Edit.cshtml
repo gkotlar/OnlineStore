@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+        <form asp-action="Edit" enctype="multipart/form-data" method="post" accept=".png,.jpg,.jpeg,.gif, pdf">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Product.Id" />
             <div class="form-group">

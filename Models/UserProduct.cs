@@ -7,8 +7,8 @@ namespace OnlineStore.Models
         [Required]
         public int Id { get; set; }
         [Required]
-        public int ProductId { get; set; }
-        public Product? Product { get; set; }
+        public int SellerProductId { get; set; }
+        public SellerProduct? SellerProduct { get; set; }
 
         [Required]
         [StringLength(450)]

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
+using Microsoft.AspNetCore.Http;
 using OnlineStore.Models;
 
 namespace OnlineStore.Controllers
@@ -13,17 +15,36 @@ namespace OnlineStore.Controllers
     public class ReviewsController : Controller
     {
         private readonly OnlineStoreContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ReviewsController(OnlineStoreContext context)
+        public ReviewsController(OnlineStoreContext context, IHttpContextAccessor  httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
+        private Uri GetReferrer()
+        {
+            var header = _httpContextAccessor.HttpContext.Request.GetTypedHeaders();
+            return header.Referer;
         }
 
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
-            var onlineStoreContext = _context.Review.Include(r => r.Product);
-            return View(await onlineStoreContext.ToListAsync());
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.UserID = userId;
+
+            IQueryable<Review> reviews = _context.Review
+                .Include(p => p.Product)
+                .AsQueryable();
+
+
+            if (User.IsInRole("User"))
+            {
+                reviews = reviews.Where(p => p.UserId == userId);
+            }
+
+            return View(await reviews.ToListAsync());
         }
 
         // GET: Reviews/Details/5
@@ -63,9 +84,9 @@ namespace OnlineStore.Controllers
             {
                 _context.Add(review);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Redirect(GetReferrer().ToString());
+
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description", review.ProductId);
             return View(review);
         }
 
@@ -153,7 +174,8 @@ namespace OnlineStore.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            
+            return Redirect(GetReferrer().ToString());
         }
 
         private bool ReviewExists(int id)

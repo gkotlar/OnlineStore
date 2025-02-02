@@ -14,6 +14,7 @@ using OnlineStore.ViewModels;
 using OnlineStore.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
+using System.Security.Claims;
 
 namespace OnlineStore.Controllers
 {
@@ -124,13 +125,24 @@ namespace OnlineStore.Controllers
                 .Include(p => p.Manufacturer)
                 .Include(p => p.sellerProducts).ThenInclude(p=>p.Seller)
                 .Include(p => p.productCategories).ThenInclude(p=>p.Category)
+                .Include(p=>p.Reviews)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.userId = userId;
+
+            ProductReviewsViewModel viewModel = new ProductReviewsViewModel()
+            {
+                Product = product,
+                Reviews = new Review(),
+                UserProduct = new UserProduct()              
+            };
+
+            return View(viewModel);
         }
 
         // GET: Products/Create
