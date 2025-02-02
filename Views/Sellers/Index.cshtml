@@ -55,7 +55,7 @@
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PhotoURL)
+                <img src="~/Images/@item.PhotoURL" height="100" width="100" alt="" asp-append-version="true" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FoundingDate)

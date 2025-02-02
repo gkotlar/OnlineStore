@@ -25,13 +25,13 @@
          <select class="js-example-basic-single" name="SortOrder" asp-for="SortOrder">
             <option value="">Name Ascending</option>
             <option value="name_desc">Name Descending</option>
-            <option value="manifacturer_asc">Manufacturer Ascending</option>
-            <option value="manifacturer_desc">Manufacturer Descending</option>
+            <option value="manufacturer_asc">Manufacturer Ascending</option>
+            <option value="manufacturer_desc">Manufacturer Descending</option>
             <option value="price_asc">Price Ascending</option>
             <option value="price_desc">Price Descending</option>
          </select>
          <div>
-            <p id="minPrix1" </p>
+            <p id="minPrix1"> </p>
             <div id="slider"> </div>
             <br />
             <p id="maxPrix1"> </p>
@@ -87,7 +87,7 @@ else
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PhotoURL)
+                <img src="~/Images/@item.PhotoURL" height="100" width="100" alt="" asp-append-version="true" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UserManualURL)

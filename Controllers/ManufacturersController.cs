@@ -3,21 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OnlineStore.Data;
+using OnlineStore.Interfaces;
 using OnlineStore.Models;
+
+using OnlineStore.ViewModels;
 
 namespace OnlineStore.Controllers
 {
     public class ManufacturersController : Controller
     {
         private readonly OnlineStoreContext _context;
+        readonly IBufferedFileUploadService _bufferedFileUploadService;
+        readonly FileDeletionService _fileDeletionService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ManufacturersController(OnlineStoreContext context)
+        public ManufacturersController(OnlineStoreContext context, 
+            IBufferedFileUploadService bufferedFileUploadService,
+            IWebHostEnvironment webHostEnvironment,
+            FileDeletionService fileDeletionService)
         {
             _context = context;
+            _bufferedFileUploadService = bufferedFileUploadService;
+            _fileDeletionService = fileDeletionService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Manufacturers
@@ -59,15 +73,37 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,Country,Email,PhotoURL,FoundingDate")] Manufacturer manufacturer)
+        public async Task<IActionResult> Create([Bind("PhotoURL,Manufacturer")] ManufacturerViewModel manufacturerVM)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(manufacturer);
+                if (manufacturerVM.PhotoURL != null)
+                {
+                    try
+                    {
+                        var fileName = await _bufferedFileUploadService.UploadFile(manufacturerVM.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            manufacturerVM.Manufacturer.PhotoURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //Log ex
+                        ViewBag.Message = "File Upload Failed";
+                    }
+                }
+
+                _context.Add(manufacturerVM.Manufacturer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(manufacturer);
+            return View(manufacturerVM);
         }
 
         // GET: Manufacturers/Edit/5
@@ -84,7 +120,13 @@ namespace OnlineStore.Controllers
             {
                 return NotFound();
             }
-            return View(manufacturer);
+
+            ManufacturerViewModel viewModel = new ManufacturerViewModel
+            {
+                Manufacturer = manufacturer                
+            };
+
+            return View(viewModel);
         }
 
         // POST: Manufacturers/Edit/5
@@ -93,9 +135,9 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Country,Email,PhotoURL,FoundingDate")] Manufacturer manufacturer)
+        public async Task<IActionResult> Edit(int id, [Bind("Manufacturer, PhotoURL")] ManufacturerViewModel manufacturerVM)
         {
-            if (id != manufacturer.Id)
+            if (id != manufacturerVM.Manufacturer.Id)
             {
                 return NotFound();
             }
@@ -104,12 +146,27 @@ namespace OnlineStore.Controllers
             {
                 try
                 {
-                    _context.Update(manufacturer);
+                    if (manufacturerVM.PhotoURL != null)
+                    {
+                        var fileName = await _bufferedFileUploadService.UploadFile(manufacturerVM.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            _fileDeletionService.DeleteFile(manufacturerVM.Manufacturer.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                            manufacturerVM.Manufacturer.PhotoURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
+                    }
+
+                    _context.Update(manufacturerVM.Manufacturer);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ManufacturerExists(manufacturer.Id))
+                    if (!ManufacturerExists(manufacturerVM.Manufacturer.Id))
                     {
                         return NotFound();
                     }
@@ -120,7 +177,7 @@ namespace OnlineStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(manufacturer);
+            return View(manufacturerVM);
         }
 
         // GET: Manufacturers/Delete/5
@@ -152,6 +209,10 @@ namespace OnlineStore.Controllers
             var manufacturer = await _context.Manufacturer.FindAsync(id);
             if (manufacturer != null)
             {
+                if (manufacturer.PhotoURL != null)
+                {
+                    _fileDeletionService.DeleteFile(manufacturer.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                }
                 _context.Manufacturer.Remove(manufacturer);
             }
 

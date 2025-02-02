@@ -67,7 +67,7 @@ namespace OnlineStore
 
             builder.Services.AddTransient<IBufferedFileUploadService, BufferedFileUploadLocalService>();
             builder.Services.AddTransient<IStreamFileUploadService, StreamFileUploadLocalService>();
-
+            builder.Services.AddTransient<FileDeletionService, FileDeletionLocalService>();
 
             var app = builder.Build();
 

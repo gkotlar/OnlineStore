@@ -4,7 +4,6 @@ namespace OnlineStore.Interfaces
 {
     public interface IBufferedFileUploadService
     {
-        Task<bool> UploadFile(IFormFile file);
-        string? GetUniqueFileName(IFormFile file);
+        Task<string?> UploadFile(IFormFile file, string path);
     }
 }

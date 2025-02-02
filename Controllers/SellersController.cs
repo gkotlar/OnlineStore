@@ -6,18 +6,30 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OnlineStore.Data;
+using OnlineStore.Interfaces;
 using OnlineStore.Models;
+using OnlineStore.ViewModels;
 
 namespace OnlineStore.Controllers
 {
     public class SellersController : Controller
     {
         private readonly OnlineStoreContext _context;
+        readonly IBufferedFileUploadService _bufferedFileUploadService;
+        readonly FileDeletionService _fileDeletionService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public SellersController(OnlineStoreContext context)
+        public SellersController(OnlineStoreContext context,
+            IBufferedFileUploadService bufferedFileUploadService,
+            IWebHostEnvironment webHostEnvironment,
+            FileDeletionService fileDeletionService)
         {
             _context = context;
+            _bufferedFileUploadService = bufferedFileUploadService;
+            _fileDeletionService = fileDeletionService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Sellers
@@ -60,15 +72,37 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,Country,Email,PhotoURL,FoundingDate")] Seller seller)
+        public async Task<IActionResult> Create( [Bind("PhotoURL,Seller")] SellerViewModel sellerVM)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(seller);
+                if (sellerVM.PhotoURL != null)
+                {
+                    try
+                    {
+                        var fileName = await _bufferedFileUploadService.UploadFile(sellerVM.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            sellerVM.Seller.PhotoURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //Log ex
+                        ViewBag.Message = "File Upload Failed";
+                    }
+                }
+
+                _context.Add(sellerVM.Seller);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(seller);
+            return View(sellerVM);
         }
 
         // GET: Sellers/Edit/5
@@ -85,7 +119,13 @@ namespace OnlineStore.Controllers
             {
                 return NotFound();
             }
-            return View(seller);
+
+            SellerViewModel viewModel = new SellerViewModel
+            {
+                Seller = seller
+            };
+
+            return View(viewModel);
         }
 
         // POST: Sellers/Edit/5
@@ -94,9 +134,9 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,Country,Email,PhotoURL,FoundingDate")] Seller seller)
+        public async Task<IActionResult> Edit(int id, [Bind("Seller, PhotoURL")] SellerViewModel sellerVM)
         {
-            if (id != seller.Id)
+            if (id != sellerVM.Seller.Id)
             {
                 return NotFound();
             }
@@ -105,12 +145,27 @@ namespace OnlineStore.Controllers
             {
                 try
                 {
-                    _context.Update(seller);
+                    if (sellerVM.PhotoURL != null)
+                    {
+                        var fileName = await _bufferedFileUploadService.UploadFile(sellerVM.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            _fileDeletionService.DeleteFile(sellerVM.Seller.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                            sellerVM.Seller.PhotoURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
+                    }
+
+                    _context.Update(sellerVM.Seller);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SellerExists(seller.Id))
+                    if (!SellerExists(sellerVM.Seller.Id))
                     {
                         return NotFound();
                     }
@@ -121,7 +176,7 @@ namespace OnlineStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(seller);
+            return View(sellerVM);
         }
 
         // GET: Sellers/Delete/5
@@ -153,6 +208,10 @@ namespace OnlineStore.Controllers
             var seller = await _context.Seller.FindAsync(id);
             if (seller != null)
             {
+                if (seller.PhotoURL != null)
+                {
+                    _fileDeletionService.DeleteFile(seller.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                }
                 _context.Seller.Remove(seller);
             }
 

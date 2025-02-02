@@ -11,6 +11,9 @@ using OnlineStore.Data;
 using OnlineStore.Interfaces;
 using OnlineStore.Models;
 using OnlineStore.ViewModels;
+using OnlineStore.Services;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 namespace OnlineStore.Controllers
 {
@@ -18,12 +21,20 @@ namespace OnlineStore.Controllers
     {
         private readonly OnlineStoreContext _context;
         readonly IBufferedFileUploadService _bufferedFileUploadService;
+        readonly FileDeletionService _fileDeletionService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductsController(OnlineStoreContext context, IBufferedFileUploadService bufferedFileUploadService)
+
+        public ProductsController(OnlineStoreContext context, 
+            IBufferedFileUploadService bufferedFileUploadService, 
+            IWebHostEnvironment webHostEnvironment, 
+            FileDeletionService fileDeletionService
+            )
         {
             _context = context;
             _bufferedFileUploadService = bufferedFileUploadService;
-
+            _fileDeletionService = fileDeletionService;
+            _webHostEnvironment = webHostEnvironment;
         }  
         
         // GET: Products
@@ -72,10 +83,10 @@ namespace OnlineStore.Controllers
                 case "name_desc":
                     products = products.OrderByDescending(p => p.Name);
                     break;
-                case "manifacturer_asc":
+                case "manufacturer_asc":
                     products = products.OrderBy(p => p.Manufacturer);
                     break;
-                case "manifacturer_desc":
+                case "manufacturer_desc":
                     products = products.OrderByDescending(p => p.Manufacturer);
                     break;
                 case "price_asc":
@@ -136,57 +147,64 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductViewModel productVM)
+        public async Task<IActionResult> Create([Bind("Id, Name, Description, PhotoURL, UserManualURL, ManufacturerId")] ProductViewModel productVM)
         {
 
             Product product = new Product()
             {
                 Name = productVM.Name,
                 Description = productVM.Description,
-                UserManualURL = productVM.UserManualURL.FileName,
-                PhotoURL = productVM.PhotoURL.FileName,
+                UserManualURL = "",
+                PhotoURL = "",
                 ManufacturerId = productVM.ManufacturerId
             };
 
             if (ModelState.IsValid)
             {
-                try
+                if (productVM.PhotoURL != null)
                 {
-                    if (await _bufferedFileUploadService.UploadFile(productVM.PhotoURL))
+                    try
                     {
-                        ViewBag.Message = "File Upload Successful";
-                        var fileName = _bufferedFileUploadService.GetUniqueFileName(productVM.PhotoURL);
-                        product.PhotoURL = fileName;
+                        var fileName = await _bufferedFileUploadService.UploadFile(productVM.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            product.PhotoURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
+                        //Log ex
                         ViewBag.Message = "File Upload Failed";
                     }
                 }
-                catch (Exception ex)
+                if (productVM.UserManualURL != null)
                 {
-                    //Log ex
-                    ViewBag.Message = "File Upload Failed";
-                }
-                try
-                {
-                    if (await _bufferedFileUploadService.UploadFile(productVM.UserManualURL))
+                    try
                     {
-                        ViewBag.Message = "File Upload Successful";
-                        var fileName = _bufferedFileUploadService.GetUniqueFileName(productVM.UserManualURL);
-                        product.UserManualURL = fileName;
+                        var fileName = await _bufferedFileUploadService.UploadFile(productVM.UserManualURL, Path.Combine(_webHostEnvironment.WebRootPath, "Files"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            product.UserManualURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
                     }
-                    else
-                    {
-                        ViewBag.Message = "File Upload Failed";
-                    }
-                }
 
-                catch (Exception ex)
-                {
-                    //Log ex
-                    ViewBag.Message = "File Upload Failed";
+                    catch (Exception ex)
+                    {
+                        //Log ex
+                        ViewBag.Message = "File Upload Failed";
+                    }
                 }
+            
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -204,8 +222,8 @@ namespace OnlineStore.Controllers
                 return NotFound();
             }
 
-            var product =  _context.Product.Where(p => p.Id == id)
-                .Include(p=>p.productCategories).First();
+            var product =  await _context.Product.Where(p => p.Id == id)
+                .Include(p=>p.productCategories).FirstAsync();
             
             if (product == null)
             {
@@ -214,12 +232,12 @@ namespace OnlineStore.Controllers
 
             var categories = _context.Category.AsEnumerable();
             categories = categories.OrderBy(s => s.Name);
-
+            
             ProductCategoriesEditViewModel viewModel = new ProductCategoriesEditViewModel
             {
                 Product = product,
                 CategoryList = new MultiSelectList(categories, "Id", "Name"),
-                SelectedCategories = product.productCategories.Select(sc => sc.CategoryId)
+                SelectedCategories = product.productCategories.Select(sc => sc.CategoryId),
             };
 
             ViewData["ManufacturerId"] = new SelectList(_context.Manufacturer, "Id", "Name", product.ManufacturerId);
@@ -232,7 +250,7 @@ namespace OnlineStore.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  ProductCategoriesEditViewModel viewModel)
+        public async Task<IActionResult> Edit(int id,  [Bind("Product, SelectedCategories, CategoryList, PhotoURL, UserManualURL")] ProductCategoriesEditViewModel viewModel)
         {
             if (id != viewModel.Product.Id)
             {
@@ -241,11 +259,65 @@ namespace OnlineStore.Controllers
 
             if (ModelState.IsValid)
             {
+                if (viewModel.PhotoURL != null)
+                {
+                    try
+                    {
+                        var fileName = await _bufferedFileUploadService.UploadFile(viewModel.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            if (!viewModel.Product.PhotoURL.IsNullOrEmpty())
+                            {
+                                _fileDeletionService.DeleteFile(viewModel.Product.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                            }
+                            viewModel.Product.PhotoURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //Log ex
+                        ViewBag.Message = "File Upload Failed";
+                    }
+                }
+         
+
+                if (viewModel.UserManualURL != null)
+                {
+                    try
+                    {
+                        var fileName = await _bufferedFileUploadService.UploadFile(viewModel.UserManualURL, Path.Combine(_webHostEnvironment.WebRootPath, "Files"));
+                        if (!fileName.IsNullOrEmpty())
+                        {
+                            ViewBag.Message = "File Upload Successful";
+                            if (!viewModel.Product.UserManualURL.IsNullOrEmpty()) 
+                            {
+                                _fileDeletionService.DeleteFile(viewModel.Product.UserManualURL, Path.Combine(_webHostEnvironment.WebRootPath, "Files"));
+                            }
+                            viewModel.Product.UserManualURL = fileName;
+                        }
+                        else
+                        {
+                            ViewBag.Message = "File Upload Failed";
+                        }
+                    }
+
+                    catch (Exception ex)
+                    {
+                        //Log ex
+                        ViewBag.Message = "File Upload Failed";
+                    }
+                }
+            
+                
                 try
                 {
                     _context.Update(viewModel.Product);
                     await _context.SaveChangesAsync();
-
 
                     IEnumerable<int> newCategoryList = viewModel.SelectedCategories;
                     IEnumerable<int> prevCategoryList = _context.ProductCategory.Where(s => s.ProductId == id).Select(s => s.CategoryId);
@@ -313,6 +385,14 @@ namespace OnlineStore.Controllers
             var product = await _context.Product.FindAsync(id);
             if (product != null)
             {
+                if (product.PhotoURL != null)
+                {
+                    _fileDeletionService.DeleteFile(product.PhotoURL, Path.Combine(_webHostEnvironment.WebRootPath, "Images"));
+                }
+                if (product.UserManualURL != null)
+                {
+                    _fileDeletionService.DeleteFile(product.UserManualURL, Path.Combine(_webHostEnvironment.WebRootPath, "Files"));
+                }
                 _context.Product.Remove(product);
             }
 

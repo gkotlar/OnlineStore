@@ -7,15 +7,13 @@ namespace OnlineStore.Services
 {
     public class BufferedFileUploadLocalService : IBufferedFileUploadService
     {
-        public async Task<bool> UploadFile(IFormFile file)
-        {
-            string path = "";
+        public async Task<string?> UploadFile(IFormFile file, string path)
+        {                      
             try
             {
                 if (file.Length > 0)
                 {
                     string filename = GetUniqueFileName(file);
-                    path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "UploadedFiles"));
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
@@ -24,11 +22,11 @@ namespace OnlineStore.Services
                     {
                         await file.CopyToAsync(fileStream);
                     }
-                    return true;
+                    return filename;
                 }
                 else
                 {
-                    return false;
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -37,20 +35,13 @@ namespace OnlineStore.Services
             }
         }
 
-        public string GetUniqueFileName(IFormFile myFile)
-        {
-            if (myFile.FileName != null)
-            {
-                var fileName = Path.GetFileName(myFile.FileName);
-                return Path.GetFileNameWithoutExtension(fileName)
-                          + "_"
-                          + Guid.NewGuid().ToString().Substring(0, 4)
-                          + Path.GetExtension(fileName);
-            }
-            else
-            {
-                return null;
-            }
+        private string GetUniqueFileName(IFormFile myFile)
+        { 
+            var fileName = Path.GetFileName(myFile.FileName);
+            return Path.GetFileNameWithoutExtension(fileName)
+                        + "_"
+                        + Guid.NewGuid().ToString().Substring(0, 4)
+                        + Path.GetExtension(fileName);
         }
     }
 }

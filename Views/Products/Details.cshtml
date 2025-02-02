@@ -26,16 +26,22 @@
             @Html.DisplayNameFor(model => model.PhotoURL)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhotoURL)
+            <img src="~/Images/@Model.PhotoURL" height="100" width="100" alt="" asp-append-version="true" />
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.UserManualURL)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserManualURL)
+            <button>
+               <a href="~/Files/@Model.UserManualURL">
+                    @Html.DisplayFor(model => model.UserManualURL)
+                </a>
+            </button>
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Manufacturer)
+            <a asp-action="Details" asp-controller="Manufacturers" asp-route-id ="@Model.ManufacturerId">
+                @Html.DisplayNameFor(model => model.Manufacturer)
+            </a>
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Manufacturer.Name)

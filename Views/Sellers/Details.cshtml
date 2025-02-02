@@ -38,7 +38,7 @@
             @Html.DisplayNameFor(model => model.PhotoURL)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhotoURL)
+            <img src="~/productImages/@Model.PhotoURL" height="100" width="100" alt="" asp-append-version="true" />
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.FoundingDate)
@@ -55,7 +55,7 @@
                 <a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
                 @product.Product.Name </a> <br />
             }
-         </dd
+         </dd>
 
 
     </dl>
