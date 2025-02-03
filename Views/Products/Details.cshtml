@@ -48,15 +48,16 @@
                     </div>
                 }                      
                 @if (User.Identity.IsAuthenticated){
-
-                    <div class="d-flex">
-                        <button class="btn btn-outline-dark flex-shrink-0" type="button">
-                            <i class="bi-cart-fill me-1"></i>
-                            <a href="~/Files/@Model.Product.UserManualURL">
-                                File Download
-                            </a>
-                        </button>
-                    </div>
+                    @if(Model.Product.UserManualURL != null){
+                        <div class="d-flex">
+                            <button class="btn btn-outline-dark flex-shrink-0" type="button">
+                                <i class="bi-cart-fill me-1"></i>
+                                <a href="~/Files/@Model.Product.UserManualURL">
+                                    File Download
+                                </a>
+                            </button>
+                        </div>
+                    }                  
                 }
             </div>
         </div>
