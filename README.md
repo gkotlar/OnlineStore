@@ -15,8 +15,6 @@ sekoj korisnik mozhe da dodava komentari i rajting, i dokolku se predomisli mozh
 
 ![Screenshot (15)](https://github.com/user-attachments/assets/b628e1b6-f89d-4ced-bf40-f4be8307abbf)
 ![Screenshot (16)](https://github.com/user-attachments/assets/ee1fd6ce-3d31-4392-9386-9881de118681)
-![Screenshot (17)](https://github.com/user-attachments/assets/4c65cfe8-d509-4bc3-b3a9-c596573cf5ce)
-![Screenshot (18)](https://github.com/user-attachments/assets/7774123d-b9c4-4fb9-913f-0c6f3d4c368b)
 ![Screenshot (19)](https://github.com/user-attachments/assets/408cf341-c3f5-475f-855c-8fbe42551bdd)
 ![Screenshot (20)](https://github.com/user-attachments/assets/82c7d7a7-f684-4d21-9f49-b102da14aef9)
 ![Screenshot (21)](https://github.com/user-attachments/assets/8425601d-0467-4308-ada1-8fbcb5769296)
