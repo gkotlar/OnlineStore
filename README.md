@@ -13,7 +13,7 @@ na kraj koshnickata presmenuva kolkava ke e vkupnata cena koja treba da ja plati
 dopolnitelno administratorot ima mozhnost da dodava produkti, prodavachi i proizvoditeli. kako i kategorii i da brishe komentari od bilo koj korisnik
 sekoj korisnik mozhe da dodava komentari i rajting, i dokolku se predomisli mozhe istiot da si go izvrishe
 
-kaj korisnicite e mozhno filtriranje po ime na proizvoditel, ime na proizvod i prodavachi koj go nudat proizvodot. dopolnitelno mozhe da se prebaruva po kategorija i minimalna i maksimalna cena. i mozhe da se podreduvaat proizvodite spored cena i azbuchen red na proizvodot
+kaj korisnicite e mozhno filtriranje po ime na proizvoditel, ime na proizvod i prodavachi koj go nudat proizvodot. dopolnitelno mozhe da se prebaruva po kategorija i minimalna i maksimalna cena. i mozhe da se podreduvaat proizvodite spored cena i azbuchen red na proizvodot ili proizveduvachot
 
 ![Screenshot (15)](https://github.com/user-attachments/assets/b628e1b6-f89d-4ced-bf40-f4be8307abbf)
 ![Screenshot (16)](https://github.com/user-attachments/assets/ee1fd6ce-3d31-4392-9386-9881de118681)
