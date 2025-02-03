@@ -21,6 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellerProduct.Price)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -42,6 +45,9 @@
                 }
                 <td>
                     @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellerProduct.Price)
                 </td>
                 <td>
                     @if(User.IsInRole("User")){
