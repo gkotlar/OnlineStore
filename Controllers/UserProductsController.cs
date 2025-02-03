@@ -112,7 +112,6 @@ namespace OnlineStore.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description", userProduct.SellerProductId);
             return View(userProduct);
         }
 
@@ -121,7 +120,7 @@ namespace OnlineStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,UserId,Quantity")] UserProduct userProduct)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,SellerProductId,UserId,Quantity")] UserProduct userProduct)
         {
             if (id != userProduct.Id)
             {
@@ -148,7 +147,6 @@ namespace OnlineStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Description", userProduct.SellerProductId);
             return View(userProduct);
         }
 

@@ -2,7 +2,94 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-5">
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center my-5" style="line-height:200px">
+                        <h1 class="display-5 fw-bolder text-white mb-2" style="margin-top:200px">A better way to shop</h1>
+                        <p class="lead text-white-50 mb-4">Quickly find what you need and the cheapest place to buy it</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Features section-->
+    <section class="py-5 border-bottom" id="features">
+        <div class="container px-5 my-5">
+            <div class="row gx-5">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-collection"></i></div>
+                    <h2 class="h4 fw-bolder">Products</h2>
+                    <p>See the products.</p>
+                    <a class="text-decoration-none" asp-controller="Products" asp-action="Index" >
+                        <span>Learn More</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-building"></i></div>
+                    <h2 class="h4 fw-bolder">Manufacturers</h2>
+                    <p>See the manufacturers.</p>
+                    <a class="text-decoration-none" asp-controller="Manufacturers" asp-action="Index">
+                        <span>Learn More</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-toggles2"></i></div>
+                    <h2 class="h4 fw-bolder">Sellers</h2>
+                    <p>See the sellers.</p>
+                    <a class="text-decoration-none" asp-controller="Sellers" asp-action="Index">
+                        <span>Learn More</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact section-->
+    <section class="bg-light py-5">
+        <div class="container px-5 my-5 px-5">
+            <div class="text-center mb-5">
+                <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-envelope"></i></div>
+                <h2 class="fw-bolder">Get in touch</h2>
+                <p class="lead mb-0">We'd love to hear from you</p>
+            </div>
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-6">
+                    <form id="contactForm" action="mailto:contact@gjorgji.kotlarovksi@gmail.com">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="name" type="text" placeholder="Enter your name...">
+                            <label for="name">Full name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="email" type="email" placeholder="name@example.com">
+                            <label for="email">Email address</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" >
+                            <label for="phone">Phone number</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem"></textarea>
+                            <label for="message">Message</label>
+                        </div>
+                        <div class="d-none" id="submitSuccessMessage">
+                            <div class="text-center mb-3">
+                                <div class="fw-bolder">Form submission successful!</div>
+                            </div>
+                        </div>
+                        <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg" id="submitButton" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>

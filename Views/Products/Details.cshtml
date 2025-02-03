@@ -4,171 +4,204 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Product.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Product.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.PhotoURL)
-        </dt>
-        <dd class = "col-sm-10">
-            <img src="~/Images/@Model.Product.PhotoURL" height="100" width="100" alt="" asp-append-version="true" />
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.UserManualURL)
-        </dt>
-        <dd class = "col-sm-10">
-            <button>
-                <a href="~/Files/@Model.Product.UserManualURL">
-                    @Html.DisplayFor(model => model.Product.UserManualURL)
-                </a>
-            </button>
-        </dd>
-        <dt class = "col-sm-2">
-            <a asp-action="Details" asp-controller="Manufacturers" asp-route-id="@Model.Product.ManufacturerId">
-                @Html.DisplayNameFor(model => model.Product.Manufacturer)
-            </a>
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Product.Manufacturer.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.productCategories)
-        </dt>
-        <dd class="col-sm-10">
-            @foreach (var category in Model.Product.productCategories)
-            {
-                <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId">
-                    @category.Category.Name
-                </a> <br />
-            }
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.sellerProducts)
-        </dt>
-        <dd class="col-sm-10">
-            @foreach (var sellerProducts in Model.Product.sellerProducts)
-            {
-                <a asp-controller="Sellers" asp-action="Details" asp-route-id="@sellerProducts.SellerId">
-                    @sellerProducts.Seller.Name
-                </a>
-                <span> &emsp; Price: @sellerProducts.Price: </span> 
-
-                <form asp-controller="UserProducts" asp-action="Create" method="post">
-                    <input type="hidden" asp-for="UserProduct.SellerProductId" name="SellerProductId" value="@sellerProducts.Id" />
-                    <input type="hidden" asp-for="UserProduct.UserId" name="UserId" value="@ViewBag.UserId" />
-                    <label asp-for="UserProduct.Quantity" class="control-label"></label>
-                    <input type="number" asp-for="UserProduct.Quantity" class="form-control" name="Quantity" />
-                    <span asp-validation-for="UserProduct.Quantity" class="text-danger"></span>
-                    <input type="submit" name="Create" value="Add to cart" />
-                </form>
-
-            }
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.getReviewsCount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.getReviewsCount)
-        </dd>
-          <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.getReviewsAverage)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Product.getReviewsAverage)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Product.Reviews)
-        </dt>
-        <dd class="col-sm-10">
-            @if(Model.Reviews != null){
-                @foreach (var review in Model.Product.Reviews)
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6">
+                <img class="card-img-top mb-5 mb-md-0" src="~/Images/@Model.Product.PhotoURL" alt="Not Found" onerror="this.onerror=null;this.src='empty.jpg'" asp-append-version="true">
+            </div>
+            <div class="col-md-6">
+                <div class="small mb-1">ID: @Model.Product.Id</div>
+                <h1 class="display-5 fw-bolder">@Model.Product.Name</h1>
+                @foreach (var category in Model.Product.productCategories)
                 {
-                    <a asp-controller="Reviews" asp-action="Details" asp-route-id="@review.Id">
-                        @review.UserId                    
+                    <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId">
+                        <span class="badge bg-info text-dark">@category.Category.Name</span>                           
                     </a> <br />
-                    <p>@review.Comment &emsp; 
-                        @if (review.Rating >= 0) {
-                            <span>
-                                Rating: @review.Rating &ensp;
-                                @for(var i = 0; i < @review.Rating.Value; i++)
-                                {
-                                    <i class="bi bi-star"></i>
-                                } 
-                            </span>
-                        }
-                        @if(ViewBag.UserId == review.UserId){
-                            <form asp-controller="Reviews" asp-action="Delete" method="post" asp-route-id="@review.Id">
-                                <input type="submit" name="Delete" value="Delete" />
-                            </form>
-                        }
-                    </p>
-
                 }
-            }else{
-                <p>Be the first to comment</p>
-            }
-        </dd>
-        <dt class="col-sm-2">
-            Leave a comment
-        </dt>
-        <dd class="col-sm-10">
-            <form asp-controller="Reviews" asp-action="Create" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>  
-                <input asp-for="Reviews.UserId" type="hidden" name="UserId" value="@ViewBag.UserId"/>
-                @* <input asp-for="Reviews.UserId" type="hidden" hidden value=@ViewBag.UserId /> *@
-                <input asp-for="Reviews.ProductId" type="hidden" name="ProductId" hidden value=@Model.Product.Id />
-
-                <div class="form-group">
-                    <label asp-for="Reviews.Comment" class="control-label"></label>
-                    <input type="text" asp-for="Reviews.Comment" name="Comment" class="form-control" />
-                    <span asp-validation-for="Reviews.Comment" class="text-danger"></span>
+                <div class="fs-5 mb-5">
+                    @if (@Model.Product.getReviewsCount >= 0)
+                    {
+                        <span>@Model.Product.getReviewsCount Ratings</span>
+                        <span>@Model.Product.getReviewsAverage</span>
+                        <span>                          
+                            @for (var i = 0; i < @Model.Product.getReviewsAverage; i++)
+                            {
+                                <i class="bi bi-star"></i>
+                            }                        
+                        </span>
+                    }else{
+                        <span>No ratings yet</span>
+                    }
                 </div>
-                <div class="form-group">
-                    <div class="col-md-6">
-                        <div class="rating-card p-4">
-                            <div class="star-rating animated-stars">
-                                <input type="radio" id="star5" name="Rating" asp-for="Reviews.Rating" value="5">
-                                <label for="star5" class="bi bi-star-fill"></label>
-                                <input type="radio" id="star4" name="Rating" asp-for="Reviews.Rating" value="4">
-                                <label for="star4" class="bi bi-star-fill"></label>
-                                <input type="radio" id="star3" name="Rating" asp-for="Reviews.Rating" value="3">
-                                <label for="star3" class="bi bi-star-fill"></label>
-                                <input type="radio" id="star2" name="Rating" asp-for="Reviews.Rating" value="2">
-                                <label for="star2" class="bi bi-star-fill"></label>
-                                <input type="radio" id="star1" name="Rating" asp-for="Reviews.Rating" value="1">
-                                <label for="star1" class="bi bi-star-fill"></label>
+                <p class="lead">@Model.Product.Description </p> <br />
+
+                @if (@Model.Product.Manufacturer != null)
+                {
+                    <div class="fs-5 mb-5">
+                        <a asp-action="Details" asp-controller="Manufacturers" asp-route-id="@Model.Product.ManufacturerId"> 
+                            <button class="btn btn-secondary flex-shrink-0" type="button">
+                                Made by: @Model.Product.Manufacturer.Name                         
+                            </button>
+                        </a>
+                    </div>
+                }                      
+                @if (User.Identity.IsAuthenticated){
+
+                    <div class="d-flex">
+                        <button class="btn btn-outline-dark flex-shrink-0" type="button">
+                            <i class="bi-cart-fill me-1"></i>
+                            <a href="~/Files/@Model.Product.UserManualURL">
+                                File Download
+                            </a>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h4 class="fw-bolder mb-4">Offers</h4>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @if(Model.Product.sellerProducts.Count == 0){
+                <span>No offers currently</span>
+            }
+            else
+            {@foreach (var sellerProducts in Model.Product.sellerProducts)
+                {
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Product image-->
+                            <img class="card-img-top" src="~/Images/@sellerProducts.Seller.PhotoURL" asp-append-version="true" height="200" alt="Not Found" onerror="this.onerror=null;this.src='empty.jpg'">
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">
+                                        <a asp-controller="Sellers" asp-action="Details" asp-route-id="@sellerProducts.SellerId">
+                                            @sellerProducts.Seller.Name
+                                        </a>
+                                    </h5>
+                                    <!-- Product price-->
+                                    <span>Price: @sellerProducts.Price </span>
+                                   
+                                </div>
                             </div>
-                            <p class="text-muted mt-2">Click to rate</p>
+                            <!-- Product actions-->
+                            @if(User.Identity.IsAuthenticated){
+                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent align-items-center">
+                                    <form asp-controller="UserProducts" asp-action="Create" method="post">
+                                        <input type="hidden" asp-for="UserProduct.SellerProductId" name="SellerProductId" value="@sellerProducts.Id" />
+                                        <input type="hidden" asp-for="UserProduct.UserId" name="UserId" value="@ViewBag.UserId" />
+                                        <input type="number" asp-for="UserProduct.Quantity" class="form-control text-center me-3" name="Quantity" value="1" min="1" style="max-width: 3rem">
+                                        <span asp-validation-for="UserProduct.Quantity" class="text-danger"></span>
+                                        <input type="submit" name="Create" class="btn btn-outline-dark mt-auto" value="Add to cart" />
+                                    </form>
+                                </div>
+                            }                           
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                </div>
-            </form>
-        </dd>
+                }
+            }
+            
+        </div>
+    </div>
+</section>
 
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Product.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<section >
+    <div class="container">
+        @if(User.Identity.IsAuthenticated){
+            <div>
+                <form asp-controller="Reviews" asp-action="Create" method="post" class="row g-3">
+                    <input asp-for="Reviews.UserId" type="hidden" name="UserId" value="@ViewBag.UserId" />
+                    <input asp-for="Reviews.ProductId" type="hidden" name="ProductId" hidden value=@Model.Product.Id />
+                    <p>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="col-md-8">
+                            <label asp-for="Reviews.Comment" class="control-label"></label>
+                            <input type="text" asp-for="Reviews.Comment" name="Comment" class="form-control" />
+                            <span asp-validation-for="Reviews.Comment" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="rating-card">
+                                <div class="star-rating animated-stars">
+                                    <input type="radio" id="star5" name="Rating" asp-for="Reviews.Rating" value="5">
+                                    <label for="star5" class="bi bi-star-fill"></label>
+                                    <input type="radio" id="star4" name="Rating" asp-for="Reviews.Rating" value="4">
+                                    <label for="star4" class="bi bi-star-fill"></label>
+                                    <input type="radio" id="star3" name="Rating" asp-for="Reviews.Rating" value="3">
+                                    <label for="star3" class="bi bi-star-fill"></label>
+                                    <input type="radio" id="star2" name="Rating" asp-for="Reviews.Rating" value="2">
+                                    <label for="star2" class="bi bi-star-fill"></label>
+                                    <input type="radio" id="star1" name="Rating" asp-for="Reviews.Rating" value="1">
+                                    <label for="star1" class="bi bi-star-fill"></label>
+                                </div>
+                                <p class="text-muted mt-2">Click to rate</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </p>                   
+                </form>
+            </div>
+        }       
+
+        <div class="">
+            @if (Model.Reviews != null)
+            {
+                <h3>
+                    Ratings:
+                </h3>
+                @foreach (var review in Model.Product.Reviews)
+                {
+                    <div>
+                        <a asp-controller="Reviews" asp-action="Details" asp-route-id="@review.Id">
+                            @review.UserId
+                        </a> <br />
+                        <p>
+                            @review.Comment &emsp;
+                            @if (review.Rating >= 0)
+                            {
+                                <span>
+                                    Rating: @review.Rating &ensp;
+                                    @for (var i = 0; i < @review.Rating.Value; i++)
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
+                                </span>
+                            }
+                            @if (ViewBag.UserId == review.UserId)
+                            {
+                                <form asp-controller="Reviews" asp-action="Delete" method="post" asp-route-id="@review.Id">
+                                    <input type="submit" name="Delete" value="Delete" />
+                                </form>
+                            }
+                        </p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Be the first to comment</p>
+            }
+
+        </div>
+    </div>
+</section>
+@if (User.IsInRole("Admin"))
+{
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model?.Product.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
+}
+
 
 
 @section Scripts {
@@ -190,6 +223,7 @@
          });        
     </script>
 }
+
 <style>
     .star-rating {
         direction: rtl;

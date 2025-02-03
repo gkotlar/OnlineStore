@@ -23,6 +23,11 @@
                 <span asp-validation-for="Manufacturer.Address" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Manufacturer.Description" class="control-label"></label>
+                <textarea asp-for="Manufacturer.Description" type="te" class="form-control"></textarea>
+                <span asp-validation-for="Manufacturer.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Manufacturer.Country" class="control-label"></label>
                 <input asp-for="Manufacturer.Country" class="form-control" />
                 <span asp-validation-for="Manufacturer.Country" class="text-danger"></span>

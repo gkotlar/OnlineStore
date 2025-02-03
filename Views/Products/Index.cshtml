@@ -4,83 +4,137 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
  {
     <p>
         <a asp-action="Create">Create New</a>
     </p>
  }
-<form asp-controller="Products" asp-action="Index" method="get">
-     <p>
-         <select asp-for="ProductCategory" asp-items="Model.Categories">
-            <option value="">All</option>
-         </select>
-         Product Name: <input type="text" asp-for="NameSearchString" />
-         Product Sellers: <input type="text" asp-for="SellerSearchString" />
-         Product Manufacturers: <input type="text" asp-for="ManufacturerSearchString" />
-         Min Price <input type="number" min="@Model.MinPrice" id="minPrix" asp-for="MinPriceSearchInt"/>
-         Max Price <input type="number" max="@Model.MaxPrice" id="maxPrix" asp-for="MaxPriceSearchInt" />
-         Order by
-         <select class="js-example-basic-single" name="SortOrder" asp-for="SortOrder">
-            <option value="">Name Ascending</option>
-            <option value="name_desc">Name Descending</option>
-            <option value="manufacturer_asc">Manufacturer Ascending</option>
-            <option value="manufacturer_desc">Manufacturer Descending</option>
-            <option value="price_asc">Price Ascending</option>
-            <option value="price_desc">Price Descending</option>
-         </select>
-         <div>
-            <p id="minPrix1"> </p>
-            <div id="slider"> </div>
-            <br />
-            <p id="maxPrix1"> </p>
-         </div>
-        
-        <input type="submit" value="Filter" />
-     </p>
-    
- </form>
+ <section>
+     <div>
 
-
-@if (Model.Products.Count.Equals(0))
-{
-    <div>No items match the criteria</div>
-}
-else
-{
-    @foreach (var item in Model.Products) {
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col">
-                <div class="card h-100">
-                    <img src="~/Images/@item.PhotoURL" class="card-img-top" alt="..." asp-append-version="true" >
-                    <div class="card-body">
-                        <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
-                        <p class="card-text">
-                            <p>Price: @item.sellerProducts.Min(p=>p.Price) </p>
-                            <p>Rating: @item.getReviewsAverage</p>
-                                    
-                            @foreach (var category in item.productCategories)
-                            {
-                                <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId"> @category.Category.Name </a> <br />
-                            }
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-body-secondary">
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                            {
-                                <a asp-action="Edit" asp-route-id="@item.Id">| Edit |</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                            }
-                        </small>
-                    </div>
+        <form asp-controller="Products" asp-action="Index" method="get" class="row g-3">
+            <p>
+                <div class="col-md-4">
+                    <label asp-for="NameSearchString" class="form-label"> Product Name:</label>
+                    <input type="text" class="form-control" asp-for="NameSearchString" />
                 </div>
+                <div class="col-md-4">
+                    <label asp-for="SellerSearchString" class="form-label">Product Sellers:</label>
+                    <input type="text" class="form-control" asp-for="SellerSearchString" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ManufacturerSearchString" class="form-label"> Product Manufacturers: </label>
+                    <input type="text" class="form-control" asp-for="ManufacturerSearchString" />
+                </div>
+
+                <div class="col-md-1">
+                    <label asp-for="MinPriceSearchInt" class="form-label"> Min Price: </label>
+                    <input type="number" min="@Model.MinPrice" max="@Model.MaxPrice" class="form-control" id="minPrix" asp-for="MinPriceSearchInt" />
+                </div>
+                <div class="col-md-10">
+                    <label class="form-label" id="minPrix1"> </label>
+                    <label class="form-label" style="float:right" id="maxPrix1"> </label>
+                    <div id="slider"> </div>
+                </div>
+                <div class="col-md-1">
+                    <label asp-for="MaxPriceSearchInt" class="form-label"> Max Price </label>
+                    <input type="number" min="@Model.MinPrice" max="@Model.MaxPrice" class="form-control" id="maxPrix" asp-for="MaxPriceSearchInt" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ProductCategory" class="form-label"> Product Category: </label>
+                    <select asp-for="ProductCategory" class="form-control" asp-items="Model.Categories">
+                        <option value="">All</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="SortOrder" class="form-label"> Sort Order: </label>
+                    <select class="form-control" name="SortOrder" asp-for="SortOrder">
+                        <option value="">Name Ascending</option>
+                        <option value="name_desc">Name Descending</option>
+                        <option value="manufacturer_asc">Manufacturer Ascending</option>
+                        <option value="manufacturer_desc">Manufacturer Descending</option>
+                        <option value="price_asc">Price Ascending</option>
+                        <option value="price_desc">Price Descending</option>
+                    </select>
+                </div>
+                <div class="col-md-4 align-items-end">
+                    <label for="Filter" class="form-label"> Click here: </label> <br />
+                    <input type="submit" id="Filter" class="btn btn-primary mb-3" value="Filter" />
+                </div>
+        </form>
+     </div>
+ </section>
+ <section style=" padding-top:20px">
+     <div>
+        @if (Model.Products.Count.Equals(0))
+        {
+            <div>No items match the criteria</div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-img-top ratio ratio-4x3">
+                                <img src="~/Images/@product.PhotoURL" alt="Not Found" onerror="this.onerror=null;this.src='empty.jpg'" asp-append-version="true">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@Html.DisplayFor(modelItem => product.Name)</h5>
+                                <p class="card-text">
+
+                                    @if (@product.getReviewsCount >= 0)
+                                    {
+                                        <span>@product.getReviewsCount Ratings</span> <br/>
+                                        <span>Average score: @product.getReviewsAverage</span>
+                                        <span>
+                                            @for (var i = 0; i < @product.getReviewsAverage; i++)
+                                            {
+                                                <i class="bi bi-star"></i>
+                                            }
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>No ratings yet</span>
+                                    }
+                                    <br />
+                                    @if(product.productCategories != null){
+                                        @foreach (var category in product.productCategories)
+                                        {
+                                            <button asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId" type="button" class="btn btn-info" value="">
+                                                @category.Category.Name
+                                            </button>
+                                        }
+                                    }                            
+                                    <hr />
+                                    @foreach (var seller in product.sellerProducts)
+                                    {
+                                        <a asp-controller="Sellers" asp-action="Details" asp-route-id="@seller.SellerId"> @seller.Seller.Name </a>  <span>Price: @seller.Price</span> <br />
+                                    }
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-body-secondary">
+                                    <a asp-action="Details" asp-route-id="@product.Id">Details</a>
+                                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@product.Id">| Edit |</a>
+                                        <a asp-action="Delete" asp-route-id="@product.Id">Delete</a>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        </div>
-    }
-}
+        }
+     </div>
+</section>
+
 
 @section Scripts {
     @{
@@ -113,8 +167,6 @@ else
 
             $("#minPrix").keyup( function(){$("#slider").slider("values", 0, $(this).val() ) });
             $("#maxPrix").keyup( function(){$("#slider").slider("values", 1, $(this).val() ) });
-
-            $('.js-example-basic-single').select2();
 
         });
     </script>

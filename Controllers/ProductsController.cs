@@ -46,6 +46,7 @@ namespace OnlineStore.Controllers
                 .Include(p => p.productCategories).ThenInclude(p => p.Category)
                 .Include(p => p.sellerProducts).ThenInclude(p => p.Seller)
                 .Include(p => p.Manufacturer)
+                .Include(p=>p.Reviews)
             .AsQueryable();
 
             var categories = _context.Category.AsEnumerable();

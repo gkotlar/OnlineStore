@@ -51,6 +51,8 @@ namespace OnlineStore.Controllers
         {
             ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name");
             ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Name");
+            ViewData["Date"] = DateTime.Now.ToString("yyyy-MM-dd");
+
             return View();
         }
 
@@ -67,8 +69,7 @@ namespace OnlineStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Product, "Id", "Name", sellerProduct.ProductId);
-            ViewData["SellerId"] = new SelectList(_context.Seller, "Id", "Name", sellerProduct.SellerId);
+
             return View(sellerProduct);
         }
 

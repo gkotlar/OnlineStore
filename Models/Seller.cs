@@ -13,11 +13,17 @@ namespace OnlineStore.Models
 
         [Required]
         [StringLength(100)]
+        [Display(Name = "Address")]
         public string Address { get; set; }
 
         [Required]
         [StringLength(100)]
         public string Country { get; set; }
+
+
+        [Required]
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
 
         [Required]
         [StringLength(50)]

@@ -22,6 +22,10 @@ namespace OnlineStore.Models
         public string Country { get; set; }
 
         [Required]
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [Required]
         [StringLength(50)]
         [EmailAddress]
         public string Email { get; set; }

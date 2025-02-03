@@ -1,4 +1,4 @@
-﻿@model OnlineStore.Models.Seller
+﻿@model OnlineStore.ViewModels.SellerViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,24 +13,29 @@
         <form asp-action="Create" method="post" enctype="multipart/form-data" accept=".png,.jpg,.jpeg,.gif, pdf">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Seller.Name" class="control-label"></label>
+                <input asp-for="Seller.Name" class="form-control" />
+                <span asp-validation-for="Seller.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
+                <label asp-for="Seller.Description" class="control-label"></label>
+                <textarea asp-for="Seller.Description" class="form-control"> </textarea>
+                <span asp-validation-for="Seller.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Country" class="control-label"></label>
-                <input asp-for="Country" class="form-control" />
-                <span asp-validation-for="Country" class="text-danger"></span>
+                <label asp-for="Seller.Address" class="control-label"></label>
+                <input asp-for="Seller.Address" class="form-control" />
+                <span asp-validation-for="Seller.Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="Seller.Country" class="control-label"></label>
+                <input asp-for="Seller.Country" class="form-control" />
+                <span asp-validation-for="Seller.Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Seller.Email" class="control-label"></label>
+                <input asp-for="Seller.Email" class="form-control" />
+                <span asp-validation-for="Seller.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="PhotoURL" class="control-label"></label>
@@ -38,9 +43,9 @@
                 <span asp-validation-for="PhotoURL" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FoundingDate" class="control-label"></label>
-                <input asp-for="FoundingDate" class="form-control" />
-                <span asp-validation-for="FoundingDate" class="text-danger"></span>
+                <label asp-for="Seller.FoundingDate" class="control-label"></label>
+                <input asp-for="Seller.FoundingDate" class="form-control" />
+                <span asp-validation-for="Seller.FoundingDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

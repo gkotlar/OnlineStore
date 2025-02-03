@@ -4,11 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -18,9 +13,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.SellerProduct.Seller.Name)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
+            @if(User.IsInRole("Admin")){
+                <th>
+                    @Html.DisplayNameFor(model => model.UserId)
+                </th>
+            }            
             <th>
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
@@ -28,36 +25,47 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SellerProduct.Product.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SellerProduct.Seller.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <form asp-controller="UserProducts" method="post">
-                        <input type="submit" asp-action="Delete" asp-route-id="@item.Id" value="Delete"/>
-                        
-                </form>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellerProduct.Product.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellerProduct.Seller.Name)
+                </td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserId)
+                    </td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @if(User.IsInRole("User")){
+                        <a asp-action="Edit" asp-route-id="@item.Id">
+                            <button>Edit</button>
+                        </a>
+                    }
+              
 
-    <th>
-        Total Sum:
-    </th>
-    <td>
-        @ViewBag.TotalSum
-    </td>
+                    <form asp-controller="UserProducts" method="post">
+                            <input type="submit" asp-action="Delete" asp-route-id="@item.Id" value="Delete"/>
+                        
+                    </form>
+                </td>
+            </tr>
+        }   
+        @if(User.IsInRole("User")){
+           
+            <th>
+                Total Sum:
+            </th>
+            <td>
+                    @ViewBag.TotalSum
+            </td>
+        }  
     </tbody>
 </table>

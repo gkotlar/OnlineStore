@@ -4,77 +4,50 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 {
     <p>
         <a asp-action="Create">Create New</a>
     </p>
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Country)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhotoURL)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FoundingDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.sellerProducts)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Country)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                <img src="~/Images/@item.PhotoURL" height="100" width="100" alt="" asp-append-version="true" />
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FoundingDate)
-            </td>
-            <td>
-                @foreach (var product in item.sellerProducts)
+<section style=" padding-top:20px">
+    <div>
+        @if (Model.Count() == 0)
+        {
+            <div>No items match the criteria</div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var seller in Model)
                 {
-                    <a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId"> @product.Product.Name </a> <br />
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-img-top ratio ratio-4x3">
+                                <img src="~/Images/@seller.PhotoURL" class="card-img-top" alt="Not Found" onerror="this.onerror=null;this.src='empty.jpg'" asp-append-version="true">
+                            </div>
+                            <div class="card-body align-items-center">
+                                <h5 class="card-title">@Html.DisplayFor(modelItem => seller.Name)</h5>
+                                <p class="card-text">
+                                    <br />
+                                    @seller.Country
+
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-body-secondary">
+                                    <a asp-action="Details" asp-route-id="@seller.Id">Details</a>
+                                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@seller.Id">| Edit |</a>
+                                        <a asp-action="Delete" asp-route-id="@seller.Id">Delete</a>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                    </div>
                 }
-            </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details | </a>
-                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                {
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit | </a>
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                }
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            </div>
+        }
+    </div>
+</section>

@@ -19,6 +19,11 @@
                 <span asp-validation-for="Manufacturer.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Manufacturer.Description" class="control-label"></label>
+                <textarea asp-for="Manufacturer.Description" class="form-control"> </textarea>
+                <span asp-validation-for="Manufacturer.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Manufacturer.Address" class="control-label"></label>
                 <input asp-for="Manufacturer.Address" class="form-control" />
                 <span asp-validation-for="Manufacturer.Address" class="text-danger"></span>
